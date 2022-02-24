@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <title>Productos</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="m-5">AGREGAR PRODUCTO</h1>
+        <form id = "formAgregarProduco">
+            <div class="mb-3">
+              <label for="inputProducto" class="form-label">Producto</label>
+              <input type="text" class="form-control" id="inputProducto" name= "titulo">
+            </div>
+            <div class="mb-3">
+              <label for="precioProducto" class="form-label">Precio</label>
+              <input type="number" class="form-control" id="precioProducto" name="precio">
+            </div>
+            <div class="mb-3">
+              <label for="thumbnailProducto" class="form-label">Imagen</label>
+              <input type="url" class="form-control" id="thumbnailProducto" name = "thumbnail">
+            </div>
+            <button type="submit" class="btn btn-primary">ENVIAR</button>
+        </form>
+
+        <div id="list_Productos" class="container mt-5"></div>
+        <hr>
+        <h2 class="m-5">CENTRO DE MENSAJES</h2>
+
+        <div id="messages" class="m-5"></div>
+
+        <form id="formMensajes">
+            <div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" placeholder="Email" name="email" required>
+                </div>
+                <div class="mb-3">
+                  <label for="message" class="form-label">Mensajes</label>
+                  <input type="text" class="form-control" placeholder="Mensaje" name="message">
+                </div>
+                <button type="submit" class="btn btn-success">ENVIAR</button>
+            </div>
+        </form>
+    </div>
+
+
+    <script src="/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+</body>
+</html>
