@@ -1,29 +1,52 @@
 const express = require('express');
 const { Server: HttpServer } = require('http');
 const { Server: IOServer } = require('socket.io');
+const path = require('path');
+const { faker } = require('@faker-js/faker')
+
 
 const contenedorMsj = require ('./public/js/mensajes')
-
+const router = express.Router();
 
 const app = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
-const path = require('path');
-
-const productosRouter = require('./routes/productos');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 app.use(express.static(path.join(__dirname, 'public')));
 
+//-------------------------------------
+//-------------------------------------
 
-app.use('/api/productos', productosRouter.router);
+const generarProductos = () =>{
+    const productos = []
+    
+    for (let index = 0; index < 5; index++) {
+        const obj = {
+            titulo: faker.name.findName(),
+            precio: faker.commerce.price(),
+            thumbnail: faker.image.imageUrl()
+        }
+        productos.push(obj)
+    }
 
-io.on("connection", (socket) => {
+    return productos
+}
+
+router.get('/', (req,res) => {
+    const productos = generarProductos()
+    res.status(200).send(io.sockets.emit("actualizarProductos", productos))
+} );
+
+app.use('/api/productos-test', router);
+
+//----------------------------------------
+//----------------------------------------
+
+io.on("connection", async (socket) => {
     console.log("Se ha conectado un cliente");
-    productosRouter.contenedor.getAll().then((data) => io.sockets.emit("actualizarProductos", data))
     socket.on("new_message", async data => {
         await contenedorMsj.save(data);
         contenedorMsj.getAll().then((tabla) => io.sockets.emit("messages_received", tabla))     
@@ -31,13 +54,8 @@ io.on("connection", (socket) => {
     contenedorMsj.getAll().then((tabla) => io.sockets.emit("messages_received", tabla))
 })
 
-
-// app.use(function(req,res,next){
-//     req.io = io;
-//     next();
-// })
-
-app.io = io;
+//--------------------------------------
+//--------------------------------------
 
 app.use((req, res) => {
     res.json({
@@ -47,8 +65,9 @@ app.use((req, res) => {
 }})});
 
 
-httpServer.listen(8080)
+//-------------------------------------
+//-------------------------------------
 
-// const server = app.listen(8080,() => {
-//     console.log(`puerto ${server.address().port}`);
-// })
+const server = httpServer.listen(8080,() => {
+    console.log(`puerto ${server.address().port}`);
+})

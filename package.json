@@ -10,8 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^6.3.1",
     "better-sqlite3": "^7.5.0",
     "express": "^4.17.3",
+    "faker": "^6.6.6",
     "knex": "^1.0.3",
     "mysql": "^2.18.1",
     "node-sass": "^6.0.1",

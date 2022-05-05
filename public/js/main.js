@@ -3,16 +3,11 @@ const socket = io.connect();
 document.querySelector("#formAgregarProduco").addEventListener("submit",async (e) =>{
     e.preventDefault();
 
-    await fetch("/api/productos",{
-        method: "post",
+    await fetch("/api/productos-test",{
+        method: "get",
         headers:{
             'content-Type' : 'application/json'
         },
-        body: JSON.stringify({
-            titulo: document.querySelector("#inputProducto").value,
-            precio: document.querySelector("#precioProducto").value,
-            thumbnail: document.querySelector("#thumbnailProducto").value
-        })
     })
 })
 
