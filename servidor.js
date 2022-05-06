@@ -3,9 +3,15 @@ const { Server: HttpServer } = require('http');
 const { Server: IOServer } = require('socket.io');
 const path = require('path');
 const { faker } = require('@faker-js/faker')
+const morgan = require('morgan')
+const {normalize, denormalize, schema} = require('normalizr')
 
+const util = require('util')
+function print(objeto) {
+    console.log(util.inspect(objeto,false,12,true))
+}
 
-const contenedorMsj = require ('./public/js/mensajes')
+const {getAllMessage,createMessage} = require('./controllers/mensajes')
 const router = express.Router();
 
 const app = express();
@@ -45,13 +51,43 @@ app.use('/api/productos-test', router);
 //----------------------------------------
 //----------------------------------------
 
+const nomalizarData = (data) => {
+    const chat = {
+        id: 'mensajes',
+        author: [],
+        messages: []
+    }
+
+    data.forEach(element => {
+        chat.author.push(element.author)
+    });
+    data.forEach(element => {
+        chat.messages.push(element.message)
+    });
+
+    const autorSchema = new schema.Entity('authors',{},{idAttribute:'email'})
+
+    const mensajeSchema = new schema.Entity('messages',{},{idAttribute:'hora'})
+
+    const postSchema = new schema.Entity('post', {
+        author: [autorSchema],
+        messages: [mensajeSchema]
+    })
+
+
+    const normalizeObj = normalize(chat, postSchema);
+
+    return normalizeObj
+}
+
 io.on("connection", async (socket) => {
     console.log("Se ha conectado un cliente");
     socket.on("new_message", async data => {
-        await contenedorMsj.save(data);
-        contenedorMsj.getAll().then((tabla) => io.sockets.emit("messages_received", tabla))     
-    })
-    contenedorMsj.getAll().then((tabla) => io.sockets.emit("messages_received", tabla))
+        await createMessage(data);
+        getAllMessage().then(async (data) => io.sockets.emit("messages_received", {mensaje:"aca van los mensajes"})) 
+        // getAllMessage().then(async (data) => io.sockets.emit("messages_received", await nomalizarData(data))) 
+    })   
+    // getAllMessage().then((data) => print(nomalizarData(data)))
 })
 
 //--------------------------------------
