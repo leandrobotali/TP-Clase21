@@ -87,7 +87,7 @@ io.on("connection", async (socket) => {
         getAllMessage().then(async (data) => io.sockets.emit("messages_received", {mensaje:"aca van los mensajes"})) 
         // getAllMessage().then(async (data) => io.sockets.emit("messages_received", await nomalizarData(data))) 
     })   
-    // getAllMessage().then((data) => print(nomalizarData(data)))
+    getAllMessage().then((data) => print(nomalizarData(data)))
 })
 
 //--------------------------------------
