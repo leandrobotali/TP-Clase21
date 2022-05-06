@@ -17,7 +17,7 @@ document.querySelector("#formMensajes").addEventListener("submit", e=> {
     console.log('123');
     let fyh = new Date();
 
-    let fyhActual = fyh.getDate() + '/' + ( fyh.getMonth() + 1 ) + '/' + fyh.getFullYear() + " - " + fyh.getHours() + ':' + fyh.getMinutes() + ':' + fyh.getSeconds();
+    let fyhActual = fyh.getHours() + ':' + fyh.getMinutes() + ':' + fyh.getSeconds();
 
     socket.emit("new_message", {
         author:{
@@ -37,42 +37,54 @@ document.querySelector("#formMensajes").addEventListener("submit", e=> {
 })
 
 
-// const deNomalizarData = (data) => {
+const deNomalizarData = (data) => {
 
-//     const autorSchema = new schema.Entity('authors',{},{idAttribute:'email'})
+    const autorSchema = new normalizr.schema.Entity('authors',{},{idAttribute:'email'})
 
-//     const mensajeSchema = new schema.Entity('messages',{},{idAttribute:'hora'})
+    const mensajeSchema = new normalizr.schema.Entity('messages',{},{idAttribute:'hora'})
 
-//     const postSchema = new schema.Entity('post', {
-//         author: [autorSchema],
-//         messages: [mensajeSchema]
-//     })
-
-
-//     const denormalizeObj = denormalize(data.result, postSchema, data.entities);
-//     console.log(denormalizeObj);
-
-//     return denormalizeObj
-// }
+    const postSchema = new normalizr.schema.Entity('post', {
+        author: [autorSchema],
+        messages: [mensajeSchema]
+    })
 
 
+    const denormalizeObj = normalizr.denormalize(data.result, postSchema, data.entities);
+    console.log(denormalizeObj);
 
-const render = (data) => {
-    const html = data.map(elem => {
-        
+    return denormalizeObj
+}
+
+
+
+socket.on("messages_received", async (data) => {
+    const deMsj = await deNomalizarData(data)
+
+    let porc = ((JSON.stringify(data).length*100)/ JSON.stringify(deMsj).length)
+
+    const porcentaje = `<strong style = "color:blue">El porcentaje de compresion es de ${porc} %</strong>`
+
+    const arrayMensajes = []
+    deMsj.post.forEach(element => {
+        arrayMensajes.push({
+            id: element.id,
+            email: element.author.email,
+            hora: element.message.hora,
+            message: element.message.text
+        })
+    });
+    arrayMensajes.sort(((a, b) => a.id - b.id))
+
+    const html = arrayMensajes.map(elem => {
+
         return `<div>
-        <strong style = "color:blue">${elem.id}</strong>
-        <em style = "color:brown">${elem.author}: </em>
-        <em style = "font-style:italic">${elem.messages}</em>
+        <strong style = "color:blue">${elem.email}</strong>
+        <em style = "color:brown">${elem.hora}: </em>
+        <em style = "font-style:italic">${elem.message}</em>
         </div>`
     }).join("");
-document.querySelector("#messages").innerHTML = html;
-};
-
-socket.on("messages_received", async (data) => { 
-    document.querySelector("#messages").innerHTML = data;
-    // const deMsj = await deNomalizarData(data)
-    // render(deMsj)
+    document.querySelector("#messages").innerHTML = html
+    document.querySelector("#compresion").innerHTML = porcentaje
 })
 
 socket.on("actualizarProductos", async data => {

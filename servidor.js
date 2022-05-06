@@ -54,16 +54,10 @@ app.use('/api/productos-test', router);
 const nomalizarData = (data) => {
     const chat = {
         id: 'mensajes',
-        author: [],
-        messages: []
+        post: []
     }
 
-    data.forEach(element => {
-        chat.author.push(element.author)
-    });
-    data.forEach(element => {
-        chat.messages.push(element.message)
-    });
+    chat.post = data
 
     const autorSchema = new schema.Entity('authors',{},{idAttribute:'email'})
 
@@ -84,10 +78,11 @@ io.on("connection", async (socket) => {
     console.log("Se ha conectado un cliente");
     socket.on("new_message", async data => {
         await createMessage(data);
-        getAllMessage().then(async (data) => io.sockets.emit("messages_received", {mensaje:"aca van los mensajes"})) 
-        // getAllMessage().then(async (data) => io.sockets.emit("messages_received", await nomalizarData(data))) 
+        // getAllMessage().then(async (data) => io.sockets.emit("messages_received", {mensaje:"aca van los mensajes"})) 
+        getAllMessage().then(async (data) => io.sockets.emit("messages_received", await nomalizarData(data))) 
     })   
-    getAllMessage().then((data) => print(nomalizarData(data)))
+    getAllMessage().then(async (data) => io.sockets.emit("messages_received", await nomalizarData(data))) 
+    // getAllMessage().then((data) => print(nomalizarData(data)))
 })
 
 //--------------------------------------
